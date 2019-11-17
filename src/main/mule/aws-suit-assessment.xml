@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="dfbe34cf-a26a-4ebe-99b1-18d856d58102" >
+		<s3:basic-connection accessKey=" AKIAJWKZDPLHRO4WPP7A" secretKey="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" />
+	</s3:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="241d99eb-4e82-49db-9991-90639c580aa8" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="aws-suit-assessmentFlow2" doc:id="54ab18b0-9ad6-4e5b-b6ac-f8a79c4f5495" >
+		<http:listener doc:name="Listener" doc:id="4a714b7d-ca28-4889-90d9-a41e32890554" config-ref="HTTP_Listener_config" path="/bucket"/>
+		<s3:create-bucket doc:name="Create bucket" doc:id="d9b417cd-c51c-40db-b41f-c1c4d90a73b4" config-ref="Amazon_S3_Configuration" bucketName="jagruti-patil25"/>
+		<set-payload value="created" doc:name="Set Payload" doc:id="bb3083ae-bf0c-4923-af33-64b30c8a826e" />
+	</flow>
+	<flow name="aws-suit-assessmentFlow" doc:id="dfd73321-04b7-4de5-81eb-c5f985688d9d" >
+		<http:listener doc:name="Listener" doc:id="af47d468-d188-4c18-8d10-0fb98ef47862" config-ref="HTTP_Listener_config" path="/create"/>
+		<s3:create-object doc:name="Create object" doc:id="9b2e250e-2fd9-47fe-ae39-7fc07757fb61" config-ref="Amazon_S3_Configuration" bucketName="jagruti-patil25" key="demofile"/>
+		<set-payload value="object created" doc:name="Set Payload" doc:id="adabb63a-eac8-40df-b30f-849a1f92973c" />
+	</flow>
+	<flow name="aws-suit-assessmentFlow1" doc:id="fa293b70-9d9f-4b93-ae04-89e7a86be65f" >
+		<http:listener doc:name="Listener" doc:id="dfbd1019-7748-4b92-bd02-af07f6ccd888" config-ref="HTTP_Listener_config" path="/getobject"/>
+		<s3:get-object doc:name="Get object" doc:id="418bf819-254c-405d-b03d-f8ee4ff76292" config-ref="Amazon_S3_Configuration" key="hellofile" bucketName="jagruti-patil25"/>
+		<logger level="INFO" doc:name="Logger" doc:id="19620e31-aa1c-4039-b05b-056e42d16ccd" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0615505a-0eec-45ed-8b75-075b4721d18d" message="created"/>
+	</flow>
+</mule>
